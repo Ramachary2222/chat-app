@@ -1,4 +1,5 @@
 import React from 'react';
+import { Switch } from 'react-router-dom';
 // eslint-disable-next-line import/no-unresolved
 import 'rsuite/dist/styles/rsuite-default.css';
 import PrivateRoute from './Components/PrivateRoute';
@@ -11,14 +12,14 @@ import './styles/main.scss'
 function App() {
   return (
     <ProfileProvider>
-      <switch>
+      <Switch>
         <PublicRoute path="/signin">
           <Signin />
         </PublicRoute>
         <PrivateRoute>
           <Home />
         </PrivateRoute>
-      </switch>
+      </Switch>
     </ProfileProvider>
   );
 }
