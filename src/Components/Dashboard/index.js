@@ -4,6 +4,7 @@ import { Drawer, Button, Divider, Alert } from 'rsuite';
 import { useProfile } from '../../context/profile.context';
 import { database } from '../../misc/firebase';
 import Editableinputs from '../Editableinputs';
+import ProvideBlock from './ProvideBlock';
 
 function Dashboard({ OnSignOut }) {
     const { profile } = useProfile();
@@ -24,6 +25,7 @@ function Dashboard({ OnSignOut }) {
             </Drawer.Header>
             <Drawer.Body>
                 <h3>Hey , {profile.name}</h3>
+                <ProvideBlock />
                 <Divider />
                 <Editableinputs
                     name="Nickname"

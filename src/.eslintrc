@@ -10,7 +10,10 @@
       "browser": true
     },
     "rules": {
+      "arrow-body-style":[0],
+      "prefer-arrow-callback":[0],
       "no-plusplus": [0],
+      "no-unused-vars":[1],
       "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
       "react/prop-types": [0],
       "react/jsx-props-no-spreading": [0],
@@ -21,6 +24,7 @@
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
       "import/no-extraneous-dependencies": "off"
+     
     }
   }
   
