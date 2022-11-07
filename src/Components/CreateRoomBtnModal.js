@@ -58,7 +58,7 @@ function CreateRoomBtnModal() {
     return (
         <div className='mt-1'>
 
-            <Button color="green" onClick={open}>
+            <Button block color="green" onClick={open}>
                 <Icon icon="creative" /> Create New Chat Room
             </Button>
 
