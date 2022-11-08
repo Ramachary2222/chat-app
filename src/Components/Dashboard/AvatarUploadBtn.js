@@ -44,12 +44,13 @@ function AvatarUploadBtn() {
     }
     const OnUploadClick = async () => {
 
-        const canvas = AvatarEditorRef.current.getImageScaledToCanvas();
-        setisLoading(true);
         try {
+            const canvas = AvatarEditorRef.current.getImageScaledToCanvas();
+            setisLoading(true);
+
             const blob = await getBlob(canvas);
 
-            const avatarFileRef = storage.ref(`/profiles/${profile.uid}`).child('avatar');
+            const avatarFileRef = storage.ref(`/profile/${profile.uid}`).child('avatar');
 
             const uploadAvatarResult = await avatarFileRef.put(blob, {
                 cacheControl: `public,max-age=${3600 * 24 * 3}`
@@ -63,6 +64,7 @@ function AvatarUploadBtn() {
             setisLoading(false);
             Alert.info("Avatar has been uplaoded Successfully", 4000)
         } catch (error) {
+            // console.log('CATCH BLOCK', error);
             setisLoading(false);
             Alert.error(error.message, 4000);
         }
