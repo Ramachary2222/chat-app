@@ -22,7 +22,9 @@ function Sidebar() {
             <div>
                 <DashboardToggle />
                 <CreateRoomBtnModal />
-                <Divider>Join Conversation</Divider>
+                <Divider style={{ margin: 0, padding: '30px 0' }}>
+                    Join conversation
+                </Divider>
             </div>
 
             <RoomsList aboveElHeight={height} />
