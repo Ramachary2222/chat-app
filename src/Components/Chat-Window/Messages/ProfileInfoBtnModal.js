@@ -7,13 +7,13 @@ function ProfileInfoBtnModal({ profile, ...btnProps }) {
 
     const { IsOpen, open, close } = useModalState()
 
-    const { name, avatar, CreatedAt } = profile;
+    const { name, CreatedAt, avatar } = profile;
     const memberSince = new Date(CreatedAt).toLocaleDateString();
     const shortName = profile.name.split(' ')[0];
 
     return (
         <div>
-            <Button {...btnProps} onClick={open}>
+            <Button {...btnProps} onClick={open} appearance="link" className="p-0 ml-1 text-black">
                 {shortName}
             </Button>
             <Modal show={IsOpen} onHide={close}>
