@@ -6,6 +6,8 @@ import ChatBottom from '../../Components/Chat-Window/Bottom';
 import Messages from '../../Components/Chat-Window/Messages';
 import { useRooms } from '../../context/rooms.context';
 import { CurrentRoomProvider } from '../../context/current-room.context';
+import { auth } from '../../misc/firebase';
+import { transformToArr } from '../../helpers';
 
 function Chat() {
 
@@ -23,9 +25,17 @@ function Chat() {
         return <h6 className='text-center mt-page'>Chat {chatId} was not found</h6>
     }
     const { name, description } = currentroom;
+
+    const admins = transformToArr(currentroom.admins);
+
+    const isAdmin = admins.includes(auth.currentUser.uid)
+
+
     const CurrentRoomdata = {
         name,
-        description
+        description,
+        admins,
+        isAdmin
     }
 
 

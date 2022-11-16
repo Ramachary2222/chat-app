@@ -9,6 +9,10 @@ export function transformToArrWithId(snapval) {
     ) : []
 }
 
+export function transformToArr(SnapVal) {
+    return SnapVal ? Object.keys(SnapVal) : []
+}
+
 export function getNameinitials(name) {
     const splitName = name.toUpperCase().split(' ');
 
