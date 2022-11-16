@@ -19,7 +19,7 @@ function Sidebar() {
     return (
         <div className='h-100 pt-2'>
 
-            <div>
+            <div ref={topSideBarRef}>
                 <DashboardToggle />
                 <CreateRoomBtnModal />
                 <Divider style={{ margin: 0, padding: '30px 0' }}>

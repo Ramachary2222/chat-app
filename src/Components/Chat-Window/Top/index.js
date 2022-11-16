@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ButtonToolbar, Icon } from 'rsuite';
 import { useCurrentRoom } from '../../../context/current-room.context'
 import { useMediaQuery } from '../../../misc/custom-hooks';
+import EditRoomBtnDrawer from './EditRoomBtnDrawer';
 import RoomInfoBtnModal from './RoomInfoBtnModal';
 
 function ChatTop() {
@@ -22,7 +23,7 @@ function ChatTop() {
                     />
                     <span className="text-disappear">{name}</span>
                 </h4>
-                <ButtonToolbar className="white-space:no-wrap d-flex">todo</ButtonToolbar>
+                <ButtonToolbar className="white-space:no-wrap d-flex"><EditRoomBtnDrawer /></ButtonToolbar>
             </div>
             <div className="d-flex justify-content-between align-items-center">
                 <span>todo</span>
