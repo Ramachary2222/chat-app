@@ -7,11 +7,25 @@ import { auth } from '../../../misc/firebase';
 import PresenceDot from '../../PresenceDot';
 import ProfileAvatar from '../../ProfileAvatar';
 import IconBtnControl from './IconBtnControl';
+import ImgBtnModal from './ImgBtnModal';
 import ProfileInfoBtnModal from './ProfileInfoBtnModal';
 
-function MessageItem({ message, handleAdmin, handleLike, Likes, LikeCount, handleDelete }) {
 
-    const { author, createdAt, text } = message;
+
+const renderFileMessage = (file) => {
+
+    if (file.contentType.includes('image')) {
+        return (<div className='height-220'>
+            <ImgBtnModal src={file.url} filename={file.name} />
+        </div>)
+    }
+
+    return <a href={file.url} target="_blank" rel="noopener noreferrer">Download {file.name}</a>
+}
+
+function MessageItem({ message, handleAdmin, handleLike, handleDelete }) {
+
+    const { author, createdAt, text, file, Likes, LikeCount, } = message;
 
     const [selfRef, isHovered] = useHover();
 
@@ -33,9 +47,6 @@ function MessageItem({ message, handleAdmin, handleLike, Likes, LikeCount, handl
 
 
     return (
-
-
-
         <li className={`padded mb-1 cursor-pointer ${isHovered ? 'bg-black-02' : ''}`} ref={selfRef}>
             <div className="d-flex align-items-center font-bolder mb-1">
                 <PresenceDot uid={author.uid} />
@@ -65,7 +76,11 @@ function MessageItem({ message, handleAdmin, handleLike, Likes, LikeCount, handl
 
             </div>
             <div>
-                <span className='word-break-all'>{text}</span>
+                {text &&
+                    <span className='word-break-all'>{text}</span>
+                }
+                {file && renderFileMessage(file)}
+
             </div>
 
         </li>

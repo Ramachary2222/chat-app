@@ -24,7 +24,7 @@ function RoomItem({ room }) {
                                 <div className='italic'>
                                     {LastMessage.author.name}
                                 </div>
-                                <span>{LastMessage.text}</span>
+                                <span>{LastMessage.text || LastMessage.file.name}</span>
                             </div>
                         </>
                         : <span>No Messages yet ....</span>
