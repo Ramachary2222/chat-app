@@ -4,6 +4,7 @@ import firebase from 'firebase/app';
 import { useParams } from 'react-router';
 import { useProfile } from '../../../context/profile.context';
 import { database } from '../../../misc/firebase';
+import AttachmentBtnModal from './AttachmentBtnModal';
 
 function assembledMsg(profile, chatId) {
     return {
@@ -65,9 +66,41 @@ function ChatBottom() {
         }
     }
 
+    const afterUpload = useCallback(async (files) => {
+        setisLoading(true);
+
+        const updates = {};
+
+        files.forEach(file => {
+
+
+            const msgData = assembledMsg(profile, chatId);
+            msgData.file = file;
+
+            const messageId = database.ref('messages').push().key;
+
+            updates[`/messages/${messageId}`] = msgData;
+        });
+        const LastMsgId = Object.keys(updates).pop();
+        updates[`/rooms/${chatId}/LastMessage`] = {
+            ...updates[LastMsgId],
+            msgId: LastMsgId,
+        }
+        try {
+            await database.ref().update(updates);
+            setisLoading(false);
+        } catch (error) {
+            setisLoading(false);
+            Alert.error(error.message, 10000)
+        }
+
+
+
+    }, [chatId, profile])
     return (
         <div>
             <InputGroup>
+                <AttachmentBtnModal afterUpload={afterUpload} />
                 <Input placeholder="Write a new message here ...." value={input} onChange={onInputChange} onKeyDown={OnKeyDown} />
                 <InputGroup.Button appearance="primary" color='blue' onClick={onSendClick} disabled={isLoading} >
                     <Icon icon="send" />
