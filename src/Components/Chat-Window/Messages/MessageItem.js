@@ -2,17 +2,20 @@ import React, { memo } from 'react'
 import { Button } from 'rsuite';
 import TimeAgo from 'timeago-react';
 import { useCurrentRoom } from '../../../context/current-room.context';
-import { useHover } from '../../../misc/custom-hooks';
+import { useHover, useMediaQuery } from '../../../misc/custom-hooks';
 import { auth } from '../../../misc/firebase';
 import PresenceDot from '../../PresenceDot';
 import ProfileAvatar from '../../ProfileAvatar';
+import IconBtnControl from './IconBtnControl';
 import ProfileInfoBtnModal from './ProfileInfoBtnModal';
 
-function MessageItem({ message, handleAdmin }) {
+function MessageItem({ message, handleAdmin, handleLike, Likes, LikeCount, handleDelete }) {
 
     const { author, createdAt, text } = message;
 
     const [selfRef, isHovered] = useHover();
+
+    const isMobile = useMediaQuery('(max-width:992px)');
 
     const isAdmin = useCurrentRoom(v => v.isAdmin);
 
@@ -23,6 +26,11 @@ function MessageItem({ message, handleAdmin }) {
     const isAuthor = auth.currentUser.uid === author.uid;
 
     const canGrantAdmin = isAdmin && !isAuthor;
+
+    const canShowIcon = isMobile || isHovered;
+
+    const isLiked = Likes && Object.keys(Likes).includes(auth.currentUser.uid);
+
 
     return (
 
@@ -40,10 +48,26 @@ function MessageItem({ message, handleAdmin }) {
                     }
                 </ProfileInfoBtnModal>
                 <TimeAgo datetime={createdAt} className="font-normal text-black-45 ml-1" />
+                <IconBtnControl
+                    {...(isLiked ? { color: 'red' } : {})}
+                    isVisible={canShowIcon}
+                    iconName="heart"
+                    toolTip="Like this message"
+                    onClick={() => handleLike(message.id)}
+                    badgeContent={LikeCount}
+                />
+                <IconBtnControl
+                    isVisible={canShowIcon}
+                    iconName="close"
+                    toolTip="Delete this message"
+                    onClick={() => handleDelete(message.id)}
+                />
+
             </div>
             <div>
                 <span className='word-break-all'>{text}</span>
             </div>
+
         </li>
     )
 }
