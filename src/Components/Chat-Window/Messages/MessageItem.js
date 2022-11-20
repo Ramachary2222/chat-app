@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/media-has-caption */
 import React, { memo } from 'react'
 import { Button } from 'rsuite';
 import TimeAgo from 'timeago-react';
@@ -18,6 +19,17 @@ const renderFileMessage = (file) => {
         return (<div className='height-220'>
             <ImgBtnModal src={file.url} filename={file.name} />
         </div>)
+    }
+
+    if (file.contentType.includes('audio')) {
+        return <div>
+
+            <audio controls>
+
+                <source src={file.url} type="audio/mp3" />
+                Your Browser not supported for audio element.
+            </audio>
+        </div>
     }
 
     return <a href={file.url} target="_blank" rel="noopener noreferrer">Download {file.name}</a>
@@ -71,7 +83,7 @@ function MessageItem({ message, handleAdmin, handleLike, handleDelete }) {
                     isVisible={canShowIcon}
                     iconName="close"
                     toolTip="Delete this message"
-                    onClick={() => handleDelete(message.id)}
+                    onClick={() => handleDelete(message.id, message.file)}
                 />
 
             </div>

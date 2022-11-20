@@ -1,9 +1,21 @@
-import React, { useState, useEffect, useCallback } from 'react'
+/* eslint-disable consistent-return */
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { Alert } from 'rsuite'
+import { Alert, Button } from 'rsuite'
 import MessageItem from './MessageItem'
-import { auth, database } from '../../../misc/firebase'
-import { transformToArrWithId } from '../../../helpers'
+import { auth, database, storage } from '../../../misc/firebase'
+import { groupBy, transformToArrWithId } from '../../../helpers'
+
+const PAGE_SIZE = 15;
+
+const messagesRef = database.ref('/messages');
+
+
+function shouldScrollToBottom(node, threshold = 30) {
+    const percentage = (100 * node.scrollTop) / (node.scrollHeight - node.clientHeight) || 0;
+
+    return percentage > threshold
+}
 
 
 function Messages() {
@@ -11,25 +23,53 @@ function Messages() {
 
     const { chatId } = useParams()
     const [messages, setMessages] = useState(null)
+    const [limit, setLimit] = useState(PAGE_SIZE);
+    const selfRef = useRef();
     const isChatEmpty = messages && messages.length === 0
-    const canShowMessages = messages && messages.length > 0
+    const canShowMessages = messages && messages.length > 0;
 
+    const loadMessages = useCallback((limitToLast) => {
+        const node = selfRef.current
+        messagesRef.off();
+
+        messagesRef.orderByChild('roomId').limitToLast(limitToLast || PAGE_SIZE).equalTo(chatId).on('value', snap => {
+            const data = transformToArrWithId(snap.val());
+            setMessages(data)
+
+            if (shouldScrollToBottom(node)) {
+                node.scrollTop = node.scrollHeight;
+            }
+        })
+
+        setLimit(p => p + PAGE_SIZE);
+    }, [chatId]);
+
+    const onLoadMore = useCallback(() => {
+
+        const node = selfRef.current;
+
+        const oldHeight = node.scrollHeight;
+
+        loadMessages(limit);
+
+        setTimeout(() => {
+            const newHeight = node.scrollHeight;
+            node.scrollTop = newHeight - oldHeight;
+
+        }, 400);
+    }, [loadMessages, limit])
 
     useEffect(() => {
-        const messagesRef = database.ref('/messages')
+        const node = selfRef.current;
+        loadMessages();
 
-
-        messagesRef.orderByChild('roomId').equalTo(chatId).on('value', snap => {
-            const data = transformToArrWithId(snap.val())
-            setMessages(data)
-        })
+        setTimeout(() => {
+            node.scrollTop = node.scrollHeight;
+        }, 400);
         return () => {
             messagesRef.off('value')
         }
-
-
-
-    }, [chatId])
+    }, [loadMessages])
 
     const handleAdmin = useCallback(async (uid) => {
         const adminRef = database.ref(`/rooms/${chatId}/admins`);
@@ -87,7 +127,7 @@ function Messages() {
     }, [])
 
     const handleDelete = useCallback(
-        async (msgId) => {
+        async (msgId, file) => {
             // eslint-disable-next-line no-alert
             if (!window.confirm("Delete this message?")) {
                 return;
@@ -114,22 +154,56 @@ function Messages() {
                 await database.ref().update(updates);
                 Alert.info("Message has been deleted", 4000);
             } catch (error) {
-                Alert.error(error.message, 4000);
+                return Alert.error(error.message, 4000);
             }
+
+            if (file) {
+                try {
+                    const fileRef = storage.refFromURL(file.url);
+                    await fileRef.delete();
+                } catch (error) {
+                    Alert.error(error.message, 4000);
+                }
+            }
+
         },
         [chatId, messages]
     );
 
+    const renderMessages = () => {
+        const groups = groupBy(messages, (item) => new Date(item.CreatedAt).toDateString());
+
+        const items = [];
+
+        Object.keys(groups).forEach((date) => {
+            items.push(<li key={date} className='text-center mb-1 padded'>{date}</li>)
+
+            const msgs = groups[date].map(msg => (
+                <MessageItem key={msg.id}
+                    message={msg}
+                    handleAdmin={handleAdmin}
+                    handleLike={handleLike}
+                    handleDelete={handleDelete} />)
+
+            )
+
+            items.push(...msgs);
+
+        })
+
+
+        return items;
+
+
+    }
 
 
     return (
-        <ul className='msg-list custom-scroll' >
+        <ul className='msg-list custom-scroll' ref={selfRef} >
+            {messages && messages.length >= PAGE_SIZE && <li className='text-center mb-2 mt-2 padded'>
+                <Button color='green' onClick={onLoadMore}>Load More</Button></li>}
             {isChatEmpty && <li>No messages yet</li>}
-            {canShowMessages && messages.map(msg => <MessageItem key={msg.id}
-                message={msg}
-                handleAdmin={handleAdmin}
-                handleLike={handleLike}
-                handleDelete={handleDelete} />)}
+            {canShowMessages && renderMessages()}
         </ul>
     )
 }
