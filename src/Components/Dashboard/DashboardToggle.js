@@ -10,7 +10,7 @@ import { auth, database } from '../../misc/firebase';
 function DashboardToggle() {
 
     const { IsOpen, open, close } = useModalState()
-    const isMobile = useMediaQuery('(max - width: 992px)');
+    const isMobile = useMediaQuery('(max-width:992px)');
 
     const OnSignOut = useCallback(() => {
         database.ref(`/status/${auth.currentUser.uid}`).set(isOfflineForDatabase).then(() => {

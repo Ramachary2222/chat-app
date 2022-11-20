@@ -20,7 +20,7 @@ function Dashboard({ OnSignOut }) {
         }
     }
     return (
-        <>
+        <div className='overflow-x-scroll'>
             <Drawer.Header>
                 Dashboard
             </Drawer.Header>
@@ -42,7 +42,7 @@ function Dashboard({ OnSignOut }) {
             </Drawer.Footer>
 
 
-        </>
+        </div>
     )
 }
 
