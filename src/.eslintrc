@@ -11,6 +11,7 @@
     },
     "rules": {
       "arrow-body-style":[0],
+      "eslint-disable-next-line":[0],
       "prefer-arrow-callback":[0],
       "no-plusplus": [0],
       "no-unused-vars":[1],
